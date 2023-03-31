@@ -1,5 +1,7 @@
 import Head from "next/head";
-import {Stack, Text} from "@chakra-ui/react";
+import {Heading, Stack} from "@chakra-ui/react";
+import React from "react";
+import {ConvertForm} from "@/components/ConvertForm/ConvertForm";
 
 export default function Home() {
   return (
@@ -10,8 +12,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Stack>
-          <Text>Hello, World</Text>
+        <Stack padding={10} width="container.sm">
+          <Heading>cakephpizer</Heading>
+          <ConvertForm />
         </Stack>
       </main>
     </>
