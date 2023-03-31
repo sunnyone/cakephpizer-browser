@@ -15,24 +15,39 @@ import {
 } from "@chakra-ui/react";
 import React, {useCallback} from "react";
 import {Controller, useForm} from "react-hook-form";
+import {convertImage, ConvertType} from "@/components/ConvertForm/convertImage";
+
+export interface ConvertFormProps {
+  onConvert?: (imageData: ImageData) => void;
+}
 
 export interface ConvertFormValues {
   files: File[];
-  type: "cakephpize" | "soudaize";
+  type: ConvertType;
   threshold: number;
 }
 
-export const ConvertForm: React.FC = () => {
+export const ConvertForm: React.FC<ConvertFormProps> = ({onConvert}) => {
   const {
     register,
     control,
     formState: {errors},
     handleSubmit,
-  } = useForm<ConvertFormValues>();
+  } = useForm<ConvertFormValues>({
+    defaultValues: {
+      files: [],
+      type: "cakephpize",
+      threshold: 50,
+    },
+  });
 
-  const onSubmit = useCallback((values: ConvertFormValues) => {
-    console.log(values);
-  }, []);
+  const onSubmit = useCallback(
+    async (values: ConvertFormValues) => {
+      const resultImage = await convertImage(values.files[0], values.type, values.threshold);
+      onConvert?.(resultImage);
+    },
+    [onConvert],
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -61,14 +76,14 @@ export const ConvertForm: React.FC = () => {
           />
         </FormControl>
 
-        <FormControl isInvalid={!!errors.type}>
-          <FormLabel>閾値(50〜80)</FormLabel>
+        <FormControl isInvalid={!!errors.threshold}>
+          <FormLabel>閾値(目安50〜80)</FormLabel>
           <Controller
             name="threshold"
             control={control}
             rules={{required: true}}
             render={({field: {onChange, onBlur, value}}) => (
-              <NumberInput defaultValue={50}>
+              <NumberInput value={value} onChange={onChange}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
